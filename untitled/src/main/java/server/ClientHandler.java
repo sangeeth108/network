@@ -16,8 +16,6 @@ public class ClientHandler implements Runnable {
         this.score = 0;
     }
 
-
-
     @Override
     public void run() {
         try {
@@ -33,9 +31,10 @@ public class ClientHandler implements Runnable {
                 y = Integer.parseInt(parts[2]);
 
                 if (GameServer.checkTreasureCollision(x, y)) {
-                    score++;
+                    incrementScore(); // Use the method to update the score
                     GameServer.spawnNewTreasure();
                 }
+
 
                 GameServer.broadcastPositions();
             }
@@ -48,7 +47,6 @@ public class ClientHandler implements Runnable {
         out.println(message);
     }
 
-
     public int getPlayerId() {
         return playerId;
     }
@@ -56,4 +54,9 @@ public class ClientHandler implements Runnable {
     public int getX() { return x; }
     public int getY() { return y; }
     public int getScore() { return score; }
+
+    public void incrementScore() {
+        score++; // Increase player score
+    }
+
 }
