@@ -8,11 +8,15 @@ public class ClientHandler implements Runnable {
     private PrintWriter out;
     private BufferedReader in;
     private int playerId;
+    private int x, y, score;
 
     public ClientHandler(Socket socket, int playerId) {
         this.socket = socket;
         this.playerId = playerId;
+        this.score = 0;
     }
+
+
 
     @Override
     public void run() {
@@ -24,7 +28,16 @@ public class ClientHandler implements Runnable {
 
             String message;
             while ((message = in.readLine()) != null) {
-                GameServer.broadcastPositions(message); // Send positions to all players
+                String[] parts = message.split(",");
+                x = Integer.parseInt(parts[1]);
+                y = Integer.parseInt(parts[2]);
+
+                if (GameServer.checkTreasureCollision(x, y)) {
+                    score++;
+                    GameServer.spawnNewTreasure();
+                }
+
+                GameServer.broadcastPositions();
             }
         } catch (IOException e) {
             System.out.println("Player " + playerId + " disconnected.");
@@ -34,4 +47,13 @@ public class ClientHandler implements Runnable {
     public void sendMessage(String message) {
         out.println(message);
     }
+
+
+    public int getPlayerId() {
+        return playerId;
+    }
+
+    public int getX() { return x; }
+    public int getY() { return y; }
+    public int getScore() { return score; }
 }

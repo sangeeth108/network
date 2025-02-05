@@ -9,10 +9,14 @@ public class GamePanel extends JPanel {
     private int playerId;
     private PrintWriter out;
     private int playerX, playerY, otherX, otherY;
+    private int score, otherScore;
+    private int treasureX, treasureY; // Treasure position
 
     public GamePanel(int playerId, PrintWriter out) {
         this.playerId = playerId;
         this.out = out;
+        this.score = 0;
+        this.otherScore = 0;
 
         // Player 0 starts on the left, Player 1 starts on the right
         if (playerId == 0) {
@@ -59,15 +63,18 @@ public class GamePanel extends JPanel {
         for (String pos : data) {
             String[] parts = pos.split(",");
             int id = Integer.parseInt(parts[0]);
-            int x = Integer.parseInt(parts[1]);
-            int y = Integer.parseInt(parts[2]);
 
-            if (id == playerId) {
-                playerX = x;
-                playerY = y;
+            if (id == -1) { // Treasure position update
+                treasureX = Integer.parseInt(parts[1]);
+                treasureY = Integer.parseInt(parts[2]);
+            } else if (id == playerId) {
+                playerX = Integer.parseInt(parts[1]);
+                playerY = Integer.parseInt(parts[2]);
+                score = Integer.parseInt(parts[3]);
             } else {
-                otherX = x;
-                otherY = y;
+                otherX = Integer.parseInt(parts[1]);
+                otherY = Integer.parseInt(parts[2]);
+                otherScore = Integer.parseInt(parts[3]);
             }
         }
         repaint();
@@ -76,9 +83,21 @@ public class GamePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(playerId == 0 ? Color.BLUE : Color.RED); // Player color
+
+        // Draw the scoreboard
+        g.setColor(Color.BLACK);
+        g.setFont(new Font("Arial", Font.BOLD, 16));
+        g.drawString("Player 1: " + score, 20, 20);
+        g.drawString("Player 2: " + otherScore, 350, 20);
+
+        // Draw the players
+        g.setColor(playerId == 0 ? Color.BLUE : Color.RED);
         g.fillRect(playerX, playerY, 20, 20);
-        g.setColor(playerId == 0 ? Color.RED : Color.BLUE); // Other player color
+        g.setColor(playerId == 0 ? Color.RED : Color.BLUE);
         g.fillRect(otherX, otherY, 20, 20);
+
+        // Draw the treasure
+        g.setColor(Color.YELLOW);
+        g.fillOval(treasureX, treasureY, 15, 15);
     }
 }
