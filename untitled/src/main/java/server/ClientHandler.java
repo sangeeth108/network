@@ -14,6 +14,14 @@ public class ClientHandler implements Runnable {
         this.socket = socket;
         this.playerId = playerId;
         this.score = 0;
+        // Set initial positions
+        if (playerId == 0) {
+            this.x = 100;
+            this.y = 250;
+        } else {
+            this.x = 400;
+            this.y = 250;
+        }
     }
 
     @Override
@@ -22,19 +30,24 @@ public class ClientHandler implements Runnable {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
 
-            out.println(playerId); // Send player ID to client
+            out.println(playerId);
 
             String message;
             while ((message = in.readLine()) != null) {
+                if (message.startsWith("RESTART")) {
+                    GameServer.resetGame();
+                    GameServer.broadcastPositions();
+                    continue;
+                }
+
                 String[] parts = message.split(",");
                 x = Integer.parseInt(parts[1]);
                 y = Integer.parseInt(parts[2]);
 
                 if (GameServer.checkTreasureCollision(x, y)) {
-                    incrementScore(); // Use the method to update the score
+                    incrementScore();
                     GameServer.spawnNewTreasure();
                 }
-
 
                 GameServer.broadcastPositions();
             }
@@ -56,7 +69,20 @@ public class ClientHandler implements Runnable {
     public int getScore() { return score; }
 
     public void incrementScore() {
-        score++; // Increase player score
+        score++;
     }
 
+    public void resetScore() {
+        score = 0;
+    }
+
+    public void resetPosition() {
+        if (playerId == 0) {
+            x = 100;
+            y = 250;
+        } else {
+            x = 400;
+            y = 250;
+        }
+    }
 }
