@@ -13,7 +13,7 @@ public class GameClient {
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
 
-            int playerId = Integer.parseInt(in.readLine()); // Read assigned player ID
+            int playerId = Integer.parseInt(in.readLine());
             System.out.println("Connected as Player " + playerId);
 
             JFrame frame = new JFrame("Networking Game");
@@ -25,7 +25,7 @@ public class GameClient {
 
             String serverMessage;
             while ((serverMessage = in.readLine()) != null) {
-                panel.updatePositions(serverMessage); // Update UI
+                panel.updatePositions(serverMessage);
             }
         } catch (IOException e) {
             e.printStackTrace();
