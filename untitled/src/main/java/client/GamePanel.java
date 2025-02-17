@@ -3,7 +3,11 @@ package client;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
+import javax.imageio.ImageIO;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,11 +27,25 @@ public class GamePanel extends JPanel {
 
     private List<Platform> platforms = new ArrayList<>();
 
+    private BufferedImage player1Image;
+    private BufferedImage player2Image;
+    private BufferedImage treasureImage;
+
     public GamePanel(int playerId, PrintWriter out) {
         this.playerId = playerId;
         this.out = out;
         this.score = 0;
         this.otherScore = 0;
+
+        // Load images
+        try {
+            player1Image = ImageIO.read(new File("src/main/resources/player1.png"));
+            player2Image = ImageIO.read(new File("src/main/resources/player2.png"));
+            treasureImage = ImageIO.read(new File("src/main/resources/treasure.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Error loading images. Make sure the paths are correct.");
+        }
 
         // Platforms matching server layout
         platforms.add(new Platform(50, 300, 120));
@@ -157,15 +175,17 @@ public class GamePanel extends JPanel {
             g.fillRect(platform.getX(), platform.getY(), platform.getWidth(), 5);
         }
 
-        // Draw players
-        g.setColor(playerId == 0 ? Color.BLUE : Color.RED);
-        g.fillRect(playerX, playerY, 20, 20);
-        g.setColor(playerId == 0 ? Color.RED : Color.BLUE);
-        g.fillRect(otherX, otherY, 20, 20);
+        // Draw players using images
+        if (playerId == 0) {
+            g.drawImage(player1Image, playerX, playerY, 20, 20, null); // Player 1
+            g.drawImage(player2Image, otherX, otherY, 20, 20, null);   // Player 2
+        } else {
+            g.drawImage(player2Image, playerX, playerY, 20, 20, null); // Player 2
+            g.drawImage(player1Image, otherX, otherY, 20, 20, null);   // Player 1
+        }
 
-        // Draw treasure
-        g.setColor(Color.YELLOW);
-        g.fillOval(treasureX, treasureY, 15, 15);
+        // Draw treasure using image
+        g.drawImage(treasureImage, treasureX, treasureY, 15, 15, null);
 
         // Draw game over message
         if (gameOver) {
