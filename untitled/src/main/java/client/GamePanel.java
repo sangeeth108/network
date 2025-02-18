@@ -30,6 +30,7 @@ public class GamePanel extends JPanel {
     private BufferedImage player1Image;
     private BufferedImage player2Image;
     private BufferedImage treasureImage;
+    private BufferedImage backgroundImage;
 
     public GamePanel(int playerId, PrintWriter out) {
         this.playerId = playerId;
@@ -42,6 +43,7 @@ public class GamePanel extends JPanel {
             player1Image = ImageIO.read(new File("src/main/resources/player1.png"));
             player2Image = ImageIO.read(new File("src/main/resources/player2.png"));
             treasureImage = ImageIO.read(new File("src/main/resources/treasure.png"));
+            backgroundImage = ImageIO.read(new File("src/main/resources/background.jpg"));
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error loading images. Make sure the paths are correct.");
@@ -162,6 +164,11 @@ public class GamePanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        // Draw the background image
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
 
         // Draw scores
         g.setColor(Color.BLACK);
